@@ -1,21 +1,45 @@
-// This plugin creates 5 rectangles on the screen.
-const numberOfRectangles = 5
+//getting user selection
+for(const node of figma.currentPage.selection)
+{
 
-// This file holds the main code for the plugins. It has access to the *document*.
-// You can access browser APIs such as the network by creating a UI which contains
-// a full browser environment (see documentation).
+//   if("fills" in node)
+// console.log(node.fills);
 
-const nodes: SceneNode[] = [];
-for (let i = 0; i < numberOfRectangles; i++) {
-  const rect = figma.createRectangle();
-  rect.x = i * 150;
-  rect.fills = [{type: 'SOLID', color: {r: 1, g: 0.5, b: 0}}];
-  figma.currentPage.appendChild(rect);
-  nodes.push(rect);
+  //duplicateing the selected node
+  let duplicateFrame = figma.createFrame();
+
+  //changing position
+  duplicateFrame.x = node.x + node.width + 200;
+  duplicateFrame.y = node.y;
+
+  // resize the duplicated node
+  duplicateFrame.resize(node.width,node.height);
+if(node.type == 'FRAME' || node.type == 'GROUP')
+{
+  for(const child of node.children)
+  {
+    var skelement;
+    skelement = figma.createRectangle();
+    skelement.resize(child.width,child.height);
+
+    skelement.x = child.x;
+    skelement.y = child.y;
+
+    skelement.cornerRadius = 6;
+    skelement.fills = [{
+      type: "SOLID",
+      color: {
+        b: 0.9725490212440491,
+        g: 0.9607843160629272,
+        r: 0.9529411792755127
+    }
+
+    }];
+
+
+    duplicateFrame.appendChild(skelement);
+  }
 }
-figma.currentPage.selection = nodes;
-figma.viewport.scrollAndZoomIntoView(nodes);
-
-// Make sure to close the plugin when you're done. Otherwise the plugin will
-// keep running, which shows the cancel button at the bottom of the screen.
+  
+}
 figma.closePlugin();
