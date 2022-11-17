@@ -5,6 +5,7 @@ for(const node of figma.currentPage.selection)
 //   if("fills" in node)
 // console.log(node.fills);
 
+const parentNode = node;
   //duplicateing the selected node
   let duplicateFrame = figma.createFrame();
 
@@ -16,21 +17,30 @@ for(const node of figma.currentPage.selection)
   duplicateFrame.resize(node.width,node.height);
 
 
-  function skelify(node){
+  function skelify(node:any){
     for(const child of node.children)
     {
-      if (child.height > 0.01) {
+      if ((child.height > 0.01) && (child.width > 0.01)) {
   
             if((child.type !== 'FRAME' && (child.type !== 'GROUP') && (child.type !== 'INSTANCE')))
             {
               var skelement;
-              skelement = figma.createRectangle();
-              skelement.resize(child.width,child.height);
-  
-              skelement.x = child.x;
-              skelement.y = child.y;
-  
-              skelement.cornerRadius = 6;
+
+              switch (child.type) {
+                case 'Elipce':
+                  skelement = figma.createEllipse
+                  break;
+              
+                default:
+                  skelement = figma.createRectangle();
+                  skelement.cornerRadius = 6;
+                  break;
+              }
+
+
+
+
+              //general style
               skelement.fills = [{
                 type: "SOLID",
                 color: {
@@ -40,6 +50,14 @@ for(const node of figma.currentPage.selection)
               }
   
               }];
+              skelement.resize(child.width,child.height);
+
+
+              //position
+              skelement.x = child.absoluteTransform[0][2] - parentNode.absoluteTransform[0][2];
+              skelement.y = child.absoluteTransform[1][2] - parentNode.absoluteTransform[1][2];
+  
+
   
   
               duplicateFrame.appendChild(skelement);
@@ -54,7 +72,7 @@ for(const node of figma.currentPage.selection)
   }
   }
 
-   
+ skelify(node);  
 
   
 }
